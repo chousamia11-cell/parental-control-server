@@ -8,55 +8,49 @@ string authPassword = "MyStrongPassword123!";     // كلمة المرور (غي
 
 app.Use(async (context, next) =>
 {
-       // السماح لمسار /api بالمرور (لكي يرسل التطبيق البيانات)
+    // 1. السماح لمسار /api بالمرور (لكي يرسل التطبيق البيانات)
     if (context.Request.Path.StartsWithSegments("/api"))
     {
         await next();
         return;
     }
 
-    // طلب تسجيل الدخول لمسارات العرض فقط
+    // 2. طلب تسجيل الدخول لمسارات العرض فقط
     if (context.Request.Path.StartsWithSegments("/report") || 
         context.Request.Path.StartsWithSegments("/screenshot"))
     {
-        // التحقق من الهيدر (Authorization Header)
+        // --- بداية كود التحقق من كلمة المرور ---
         string authHeader = context.Request.Headers["Authorization"];
         if (authHeader != null && authHeader.StartsWith("Basic "))
         {
-            // ... (باقي الكود القديم الخاص بالتحقق من المستخدم وكلمة المرور)
+            var encoded = authHeader.Substring("Basic ".Length).Trim();
+            var encoding = System.Text.Encoding.GetEncoding("iso-8859-1");
+            var decoded = encoding.GetString(Convert.FromBase64String(encoded));
+            var separatorIndex = decoded.IndexOf(':');
+            var usernameInput = decoded.Substring(0, separatorIndex);
+            var passwordInput = decoded.Substring(separatorIndex + 1);
+
+            if (usernameInput == authUsername && passwordInput == authPassword)
+            {
+                await next(); // البيانات صحيحة، أكمل الطلب
+                return;
+            }
         }
-        // ...
+
+        // إذا لم تكن البيانات صحيحة، اطلب المصادقة
+        context.Response.Headers["WWW-Authenticate"] = "Basic realm=\"MyControlPanel\"";
+        context.Response.StatusCode = 401; // غير مصرح
+        return; 
+        // --- نهاية كود التحقق من كلمة المرور ---
     }
     else
     {
+        // 3. المسارات الأخرى (مثل الصفحة الرئيسية) تمر مباشرة
         await next();
         return;
     }
-    }
-
-    // التحقق من هيدر المصادقة
-    string authHeader = context.Request.Headers["Authorization"];
-    if (authHeader != null && authHeader.StartsWith("Basic "))
-    {
-        var encoded = authHeader.Substring("Basic ".Length).Trim();
-        var encoding = System.Text.Encoding.GetEncoding("iso-8859-1");
-        var decoded = encoding.GetString(Convert.FromBase64String(encoded));
-        var separatorIndex = decoded.IndexOf(':');
-        var usernameInput = decoded.Substring(0, separatorIndex);
-        var passwordInput = decoded.Substring(separatorIndex + 1);
-
-        if (usernameInput == authUsername && passwordInput == authPassword)
-        {
-            await next();   // البيانات صحيحة، أكمل الطلب
-            return;
-        }
-    }
-
-    // إذا لم تكن البيانات صحيحة، اطلب المصادقة
-    context.Response.Headers["WWW-Authenticate"] = "Basic realm=\"MyControlPanel\"";
-    context.Response.StatusCode = 401;   // غير مصرح
 });
-// ================== نهاية كود الحماية ==================
+// ==================== نهاية كود الحماية ====================
 
 string dataFolder = Path.Combine(AppContext.BaseDirectory, "Data");
 string screenshotsFolder = Path.Combine(AppContext.BaseDirectory, "Screenshots");
