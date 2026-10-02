@@ -8,13 +8,30 @@ string authPassword = "MyStrongPassword123!";     // كلمة المرور (غي
 
 app.Use(async (context, next) =>
 {
-    // استثناء مسارات API حتى لا يتعطل تطبيق هاتف ابنك
-   if (context.Request.Path.StartsWithSegments("/api") || 
-    context.Request.Path.StartsWithSegments("/report") || 
-    context.Request.Path.StartsWithSegments("/screenshot"))
+       // السماح لمسار /api بالمرور (لكي يرسل التطبيق البيانات)
+    if (context.Request.Path.StartsWithSegments("/api"))
     {
         await next();
         return;
+    }
+
+    // طلب تسجيل الدخول لمسارات العرض فقط
+    if (context.Request.Path.StartsWithSegments("/report") || 
+        context.Request.Path.StartsWithSegments("/screenshot"))
+    {
+        // التحقق من الهيدر (Authorization Header)
+        string authHeader = context.Request.Headers["Authorization"];
+        if (authHeader != null && authHeader.StartsWith("Basic "))
+        {
+            // ... (باقي الكود القديم الخاص بالتحقق من المستخدم وكلمة المرور)
+        }
+        // ...
+    }
+    else
+    {
+        await next();
+        return;
+    }
     }
 
     // التحقق من هيدر المصادقة
