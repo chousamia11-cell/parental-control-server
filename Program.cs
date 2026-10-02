@@ -16,8 +16,9 @@ app.Use(async (context, next) =>
     }
 
     // 2. طلب تسجيل الدخول لمسارات العرض فقط
-    if (context.Request.Path.StartsWithSegments("/report") || 
-        context.Request.Path.StartsWithSegments("/screenshot"))
+if (context.Request.Path.StartsWithSegments("/report") || 
+    context.Request.Path.StartsWithSegments("/screenshot") ||
+    context.Request.Path.StartsWithSegments("/dashboard"))
     {
         // --- بداية كود التحقق من كلمة المرور ---
         string authHeader = context.Request.Headers["Authorization"];
