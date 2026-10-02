@@ -11,6 +11,7 @@ app.Use(async (context, next) =>
     // 1. السماح لمسار /api بالمرور (لكي يرسل التطبيق البيانات)
    if (context.Request.Path.StartsWithSegments("/api") || 
     context.Request.Path.StartsWithSegments("/report"))
+    context.Request.Path.StartsWithSegments("/screenshot"))
 {
     await next();
     return;
