@@ -9,11 +9,12 @@ string authPassword = "MyStrongPassword123!";     // كلمة المرور (غي
 app.Use(async (context, next) =>
 {
     // 1. السماح لمسار /api بالمرور (لكي يرسل التطبيق البيانات)
-    if (context.Request.Path.StartsWithSegments("/api"))
-    {
-        await next();
-        return;
-    }
+   if (context.Request.Path.StartsWithSegments("/api") || 
+    context.Request.Path.StartsWithSegments("/report"))
+{
+    await next();
+    return;
+}
 
     // 2. طلب تسجيل الدخول لمسارات العرض فقط
 if (context.Request.Path.StartsWithSegments("/report") || 
