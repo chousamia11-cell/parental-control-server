@@ -148,7 +148,6 @@ app.Run($"http://0.0.0.0:{port}");
 // 9. دالة بناء لوحة التحكم
 static async Task<string> BuildDashboardHtml(string dataFolder, string screenshotsFolder)
 {
-    static async Task<string> BuildDashboardHtml(string dataFolder, string screenshotsFolder)
 {
     // ⬇️⬇️⬇️ الصق هذه الأسطر هنا ⬇️⬇️⬇️
     Console.WriteLine("========== [DEBUG START] ==========");
