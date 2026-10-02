@@ -1,0 +1,15 @@
+# Build outputs
+bin/
+obj/
+
+# Runtime data
+Data/
+Screenshots/
+
+# IDE
+.vs/
+.vscode/
+*.user
+
+# Logs
+*.log
