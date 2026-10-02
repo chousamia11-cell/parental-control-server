@@ -9,7 +9,9 @@ string authPassword = "MyStrongPassword123!";     // كلمة المرور (غي
 app.Use(async (context, next) =>
 {
     // استثناء مسارات API حتى لا يتعطل تطبيق هاتف ابنك
-    if (context.Request.Path.StartsWithSegments("/api"))
+   if (context.Request.Path.StartsWithSegments("/api") || 
+    context.Request.Path.StartsWithSegments("/report") || 
+    context.Request.Path.StartsWithSegments("/screenshot"))
     {
         await next();
         return;
