@@ -1,0 +1,8 @@
+bin/
+obj/
+Data/
+Screenshots/
+*.log
+.vs/
+.vscode/
+*.user
