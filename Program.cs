@@ -148,6 +148,30 @@ app.Run($"http://0.0.0.0:{port}");
 // 9. دالة بناء لوحة التحكم
 static async Task<string> BuildDashboardHtml(string dataFolder, string screenshotsFolder)
 {
+    static async Task<string> BuildDashboardHtml(string dataFolder, string screenshotsFolder)
+{
+    // ⬇️⬇️⬇️ الصق هذه الأسطر هنا ⬇️⬇️⬇️
+    Console.WriteLine("========== [DEBUG START] ==========");
+    Console.WriteLine($"[DEBUG] dataFolder = {dataFolder}");
+    Console.WriteLine($"[DEBUG] Exists = {Directory.Exists(dataFolder)}");
+    if (Directory.Exists(dataFolder))
+    {
+        var files = Directory.GetFiles(dataFolder, "*.json");
+        Console.WriteLine($"[DEBUG] JSON files count = {files.Length}");
+        foreach (var f in files)
+            Console.WriteLine($"[DEBUG] File: {f}");
+    }
+    else
+    {
+        Console.WriteLine("[DEBUG] ❌ dataFolder DOES NOT EXIST!");
+    }
+    Console.WriteLine($"[DEBUG] screenshotsFolder = {screenshotsFolder}");
+    Console.WriteLine($"[DEBUG] Screenshots exists = {Directory.Exists(screenshotsFolder)}");
+    Console.WriteLine("========== [DEBUG END] ==========");
+    // ⬆️⬆️⬆️ نهاية الأسطر ⬆️⬆️⬆️
+
+    var sb = new StringBuilder();
+    sb.Append(@"
     var sb = new StringBuilder();
     sb.Append(@"
 <!DOCTYPE html>
