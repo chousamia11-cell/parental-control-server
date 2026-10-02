@@ -193,7 +193,6 @@ static async Task<string> BuildDashboardHtml(string dataFolder, string screensho
 </head>
 <body>
 <h1>Parental Control Dashboard</h1>
-");
 
     if (Directory.Exists(dataFolder))
     {
