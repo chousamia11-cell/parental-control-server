@@ -2,6 +2,42 @@ using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
+// ================== بداية كود الحماية ==================
+string authUsername = "admin";                    // اسم المستخدم
+string authPassword = "MyStrongPassword123!";     // كلمة المرور (غيرها)
+
+app.Use(async (context, next) =>
+{
+    // استثناء مسارات API حتى لا يتعطل تطبيق هاتف ابنك
+    if (context.Request.Path.StartsWithSegments("/api"))
+    {
+        await next();
+        return;
+    }
+
+    // التحقق من هيدر المصادقة
+    string authHeader = context.Request.Headers["Authorization"];
+    if (authHeader != null && authHeader.StartsWith("Basic "))
+    {
+        var encoded = authHeader.Substring("Basic ".Length).Trim();
+        var encoding = System.Text.Encoding.GetEncoding("iso-8859-1");
+        var decoded = encoding.GetString(Convert.FromBase64String(encoded));
+        var separatorIndex = decoded.IndexOf(':');
+        var usernameInput = decoded.Substring(0, separatorIndex);
+        var passwordInput = decoded.Substring(separatorIndex + 1);
+
+        if (usernameInput == authUsername && passwordInput == authPassword)
+        {
+            await next();   // البيانات صحيحة، أكمل الطلب
+            return;
+        }
+    }
+
+    // إذا لم تكن البيانات صحيحة، اطلب المصادقة
+    context.Response.Headers["WWW-Authenticate"] = "Basic realm=\"MyControlPanel\"";
+    context.Response.StatusCode = 401;   // غير مصرح
+});
+// ================== نهاية كود الحماية ==================
 
 string dataFolder = Path.Combine(AppContext.BaseDirectory, "Data");
 string screenshotsFolder = Path.Combine(AppContext.BaseDirectory, "Screenshots");
